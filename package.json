@@ -1,0 +1,53 @@
+{
+    "name": "build-gradle-reader",
+    "version": "1.0.0",
+    "main": "./lib/parse.js",
+    "description": "Converts build.gradle files into js representations",
+    "keywords": [
+        "build.gradle", 
+        "gradle", 
+        "android"
+    ],
+    "homepage": "https://github.com/ehoogerbeets/build-gradle-reader",
+    "bugs": "https://github.com/ehoogerbeets/build-gradle-reader/issues",
+    "email": "contact@healthtap.com",
+    "license": "Apache-2.0",
+    "author": {
+        "name": "Edwin Hoogerbeets",
+        "web": "http://www.healthtap.com/",
+        "email": "edwin.hoogerbeets@healthtap.com"
+    },
+    "contributors": [
+        {
+            "name": "Edwin Hoogerbeets",
+            "email": "ehoogerbeets@healthtap.com" 
+        }
+    ],
+    "files": [
+	"bin",
+        "lib",
+        "README.md",
+        "LICENSE.txt"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:ehoogerbeets/build-gradle-reader.git"
+    },
+    "engines": {
+        "nodejs": ">= 0.10"
+    },
+    "scripts": {
+        "test": "nodeunit test/testInflect.js"
+    },
+    "directories": {
+        "test": "test",
+        "lib": "lib"
+    },
+    "devDependencies": {
+        "nodeunit": "^1.0.0"
+    },
+    "dependencies": {
+        "deep-assign": "2.0.0"
+    },
+    "bin": "./bin/build-gradle-reader"
+}

@@ -1,11 +1,11 @@
 {
     "name": "build-gradle-reader",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "main": "./lib/parse.js",
     "description": "Converts build.gradle files into js representations",
     "keywords": [
-        "build.gradle", 
-        "gradle", 
+        "build.gradle",
+        "gradle",
         "android"
     ],
     "homepage": "https://github.com/ehoogerbeets/build-gradle-reader",
@@ -20,11 +20,11 @@
     "contributors": [
         {
             "name": "Edwin Hoogerbeets",
-            "email": "ehoogerbeets@healthtap.com" 
+            "email": "ehoogerbeets@healthtap.com"
         }
     ],
     "files": [
-	"bin",
+        "bin",
         "lib",
         "README.md",
         "LICENSE.txt"
@@ -34,17 +34,21 @@
         "url": "git@github.com:ehoogerbeets/build-gradle-reader.git"
     },
     "engines": {
-        "nodejs": ">= 0.10"
+        "nodejs": ">=12 <23"
     },
     "scripts": {
-        "test": "nodeunit test/testInflect.js"
+        "test": "LANG=en_US.UTF8 node --experimental-vm-modules node_modules/jest/bin/jest.js",
+        "test:watch": "LANG=en_US.UTF8 node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+        "test:coverage": "LANG=en_US.UTF8 node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+        "debug": "LANG=en_US.UTF8 node --experimental-vm-modules node_modules/jest/bin/jest.js --debug",
+        "clean": "git clean -f -d src test"
     },
     "directories": {
         "test": "test",
         "lib": "lib"
     },
     "devDependencies": {
-        "nodeunit": "^1.0.0"
+        "jest": "^30.2.0"
     },
     "dependencies": {
         "deep-assign": "2.0.0"

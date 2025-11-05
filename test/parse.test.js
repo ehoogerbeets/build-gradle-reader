@@ -2,7 +2,7 @@
  * Unit tests for parse.js - build.gradle parser
  */
 
-const parse = require('../lib/parse.js');
+import parse from '../lib/parse.js';
 
 describe('parse', () => {
     describe('Basic key-value pairs', () => {

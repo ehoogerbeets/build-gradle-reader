@@ -18,17 +18,15 @@
     ],
     "homepage": "https://github.com/ehoogerbeets/build-gradle-reader",
     "bugs": "https://github.com/ehoogerbeets/build-gradle-reader/issues",
-    "email": "contact@healthtap.com",
     "license": "Apache-2.0",
     "author": {
         "name": "Edwin Hoogerbeets",
-        "web": "http://www.healthtap.com/",
-        "email": "edwin.hoogerbeets@healthtap.com"
+                "email": "edwin.hoogerbeets@gmail.com"
     },
     "contributors": [
         {
             "name": "Edwin Hoogerbeets",
-            "email": "ehoogerbeets@healthtap.com"
+            "email": "ehoogerbeets@gmail.com"
         }
     ],
     "files": [

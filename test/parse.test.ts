@@ -1,8 +1,9 @@
 /**
- * Unit tests for parse.js - build.gradle parser
+ * Unit tests for parse.ts - build.gradle parser
  */
 
 import parse from '../lib/parse.js';
+import type { ParsedObject, Dependency, Repository } from '../lib/parse.js';
 
 describe('parse', () => {
     describe('Basic key-value pairs', () => {
@@ -238,8 +239,9 @@ key = value`;
 }`;
             const result = parse(input);
             expect(result.dependencies).toBeInstanceOf(Array);
-            expect(result.dependencies.length).toBe(1);
-            expect(result.dependencies[0]).toEqual({
+            const deps = result.dependencies as Dependency[];
+            expect(deps.length).toBe(1);
+            expect(deps[0]).toEqual({
                 type: 'compile',
                 group: 'com.example',
                 name: 'library',
@@ -256,10 +258,11 @@ key = value`;
 }`;
             const result = parse(input);
             expect(result.dependencies).toBeInstanceOf(Array);
-            expect(result.dependencies.length).toBe(3);
-            expect(result.dependencies[0].type).toBe('compile');
-            expect(result.dependencies[1].type).toBe('implementation');
-            expect(result.dependencies[2].type).toBe('testImplementation');
+            const deps = result.dependencies as Dependency[];
+            expect(deps.length).toBe(3);
+            expect(deps[0].type).toBe('compile');
+            expect(deps[1].type).toBe('implementation');
+            expect(deps[2].type).toBe('testImplementation');
         });
 
         test('should parse dependency with double quotes', () => {
@@ -267,7 +270,8 @@ key = value`;
     compile "com.example:library:1.0.0"
 }`;
             const result = parse(input);
-            expect(result.dependencies[0]).toEqual({
+            const deps = result.dependencies as Dependency[];
+            expect(deps[0]).toEqual({
                 type: 'compile',
                 group: 'com.example',
                 name: 'library',
@@ -284,12 +288,13 @@ key = value`;
 }`;
             const result = parse(input);
             expect(result.dependencies).toBeInstanceOf(Array);
-            expect(result.dependencies.length).toBe(1);
-            expect(result.dependencies[0].group).toBe('com.example');
-            expect(result.dependencies[0].name).toBe('library');
-            expect(result.dependencies[0].version).toBe('1.0.0');
-            expect(result.dependencies[0].excludes).toBeInstanceOf(Array);
-            expect(result.dependencies[0].excludes.length).toBeGreaterThan(0);
+            const deps = result.dependencies as Dependency[];
+            expect(deps.length).toBe(1);
+            expect(deps[0].group).toBe('com.example');
+            expect(deps[0].name).toBe('library');
+            expect(deps[0].version).toBe('1.0.0');
+            expect(deps[0].excludes).toBeInstanceOf(Array);
+            expect(deps[0].excludes.length).toBeGreaterThan(0);
         });
 
         test('should parse project dependency', () => {
@@ -298,7 +303,8 @@ key = value`;
 }`;
             const result = parse(input);
             expect(result.dependencies).toBeInstanceOf(Array);
-            expect(result.dependencies[0].name).toContain('project');
+            const deps = result.dependencies as Dependency[];
+            expect(deps[0].name).toContain('project');
         });
 
         test('should parse dependency with map notation', () => {
@@ -307,9 +313,10 @@ key = value`;
 }`;
             const result = parse(input);
             expect(result.dependencies).toBeInstanceOf(Array);
-            expect(result.dependencies[0].group).toBe('com.example');
-            expect(result.dependencies[0].name).toBe('library');
-            expect(result.dependencies[0].version).toBe('1.0.0');
+            const deps = result.dependencies as Dependency[];
+            expect(deps[0].group).toBe('com.example');
+            expect(deps[0].name).toBe('library');
+            expect(deps[0].version).toBe('1.0.0');
         });
     });
 
@@ -322,10 +329,11 @@ key = value`;
 }`;
             const result = parse(input);
             expect(result.repositories).toBeInstanceOf(Array);
-            expect(result.repositories.length).toBe(1);
+            const repos = result.repositories as Repository[];
+            expect(repos.length).toBe(1);
             // The parser treats mavenCentral() as a key with no value, so it becomes "unknown"
-            expect(result.repositories[0].type).toBe('unknown');
-            expect(result.repositories[0].data.name).toBe('mavenCentral()');
+            expect(repos[0].type).toBe('unknown');
+            expect(repos[0].data.name).toBe('mavenCentral()');
         });
 
         test('should parse multiple repositories', () => {
@@ -336,10 +344,11 @@ key = value`;
 }`;
             const result = parse(input);
             expect(result.repositories).toBeInstanceOf(Array);
-            expect(result.repositories.length).toBe(3);
+            const repos = result.repositories as Repository[];
+            expect(repos.length).toBe(3);
             // All function call repositories become "unknown" type
-            expect(result.repositories.map(r => r.type)).toEqual(['unknown', 'unknown', 'unknown']);
-            expect(result.repositories.map(r => r.data.name)).toEqual(['mavenCentral()', 'jcenter()', 'google()']);
+            expect(repos.map(r => r.type)).toEqual(['unknown', 'unknown', 'unknown']);
+            expect(repos.map(r => r.data.name)).toEqual(['mavenCentral()', 'jcenter()', 'google()']);
         });
 
         test('should parse maven repository with url', () => {
@@ -350,8 +359,9 @@ key = value`;
 }`;
             const result = parse(input);
             expect(result.repositories).toBeInstanceOf(Array);
-            expect(result.repositories[0].type).toBe('maven');
-            expect(result.repositories[0].data).toBeDefined();
+            const repos = result.repositories as Repository[];
+            expect(repos[0].type).toBe('maven');
+            expect(repos[0].data).toBeDefined();
         });
     });
 
@@ -501,18 +511,24 @@ repositories {
             const result = parse(input);
             
             expect(result.android).toBeDefined();
-            expect(result.android.defaultConfig).toBeDefined();
-            expect(result.android.defaultConfig.applicationId).toBe('com.example.app');
-            expect(result.android.defaultConfig.minSdkVersion).toBe('21');
-            expect(result.android.buildTypes).toBeDefined();
-            expect(result.android.buildTypes.release).toBeDefined();
-            expect(result.android.buildTypes.release.minifyEnabled).toBe(true);
+            const android = result.android as ParsedObject;
+            expect(android.defaultConfig).toBeDefined();
+            const defaultConfig = android.defaultConfig as ParsedObject;
+            expect(defaultConfig.applicationId).toBe('com.example.app');
+            expect(defaultConfig.minSdkVersion).toBe('21');
+            expect(android.buildTypes).toBeDefined();
+            const buildTypes = android.buildTypes as ParsedObject;
+            expect(buildTypes.release).toBeDefined();
+            const release = buildTypes.release as ParsedObject;
+            expect(release.minifyEnabled).toBe(true);
             
             expect(result.dependencies).toBeInstanceOf(Array);
-            expect(result.dependencies.length).toBe(2);
+            const deps = result.dependencies as Dependency[];
+            expect(deps.length).toBe(2);
             
             expect(result.repositories).toBeInstanceOf(Array);
-            expect(result.repositories.length).toBe(2);
+            const repos = result.repositories as Repository[];
+            expect(repos.length).toBe(2);
         });
     });
 
@@ -546,9 +562,10 @@ versionName = "1.2.3"`;
 }`;
             const result = parse(input);
             expect(result.android).toBeDefined();
-            expect(result.android.compileSdk).toBe('34');
-            expect(result.android.namespace).toBe('com.example.app');
-            expect(result.android.minSdk).toBe('24');
+            const android = result.android as ParsedObject;
+            expect(android.compileSdk).toBe('34');
+            expect(android.namespace).toBe('com.example.app');
+            expect(android.minSdk).toBe('24');
         });
 
         test('should parse Android build.gradle format from documentation', () => {
@@ -567,14 +584,16 @@ versionName = "1.2.3"`;
 }`;
             const result = parse(input);
             expect(result.android).toBeDefined();
-            expect(result.android.namespace).toBe('com.example.myapplication');
-            expect(result.android.compileSdk).toBe('34');
-            expect(result.android.defaultConfig).toBeDefined();
-            expect(result.android.defaultConfig.applicationId).toBe('com.example.myapplication');
-            expect(result.android.defaultConfig.minSdk).toBe('24');
-            expect(result.android.defaultConfig.targetSdk).toBe('34');
-            expect(result.android.defaultConfig.versionCode).toBe('1');
-            expect(result.android.defaultConfig.versionName).toBe('1.0');
+            const android = result.android as ParsedObject;
+            expect(android.namespace).toBe('com.example.myapplication');
+            expect(android.compileSdk).toBe('34');
+            expect(android.defaultConfig).toBeDefined();
+            const defaultConfig = android.defaultConfig as ParsedObject;
+            expect(defaultConfig.applicationId).toBe('com.example.myapplication');
+            expect(defaultConfig.minSdk).toBe('24');
+            expect(defaultConfig.targetSdk).toBe('34');
+            expect(defaultConfig.versionCode).toBe('1');
+            expect(defaultConfig.versionName).toBe('1.0');
         });
 
         test('should parse mixed Groovy syntax (with and without equals)', () => {
@@ -590,10 +609,12 @@ versionName = "1.2.3"`;
 }`;
             const result = parse(input);
             expect(result.android).toBeDefined();
-            expect(result.android.compileSdkVersion).toBe('28');
-            expect(result.android.buildToolsVersion).toBe('28.0.3');
-            expect(result.android.defaultConfig.applicationId).toBe('com.example.app');
-            expect(result.android.defaultConfig.minSdkVersion).toBe('21');
+            const android = result.android as ParsedObject;
+            expect(android.compileSdkVersion).toBe('28');
+            expect(android.buildToolsVersion).toBe('28.0.3');
+            const defaultConfig = android.defaultConfig as ParsedObject;
+            expect(defaultConfig.applicationId).toBe('com.example.app');
+            expect(defaultConfig.minSdkVersion).toBe('21');
         });
 
         test('should parse Groovy-style method calls without parentheses', () => {
@@ -605,8 +626,9 @@ versionName = "1.2.3"`;
 }`;
             const result = parse(input);
             expect(result.repositories).toBeInstanceOf(Array);
+            const repos = result.repositories as Repository[];
             // Method calls without parentheses are parsed as keys with no value
-            expect(result.repositories.length).toBeGreaterThan(0);
+            expect(repos.length).toBeGreaterThan(0);
         });
 
         test('should parse Groovy-style string interpolation awareness', () => {
@@ -632,10 +654,11 @@ def name = 'MyApp'`;
     minSdkVersion 21
 }`;
             const result = parse(input);
-            expect(result.android.compileSdkVersion).toBe('28');
-            expect(result.android.versionCode).toBe('1');
-            expect(result.android.versionName).toBe('1.0');
-            expect(result.android.minSdkVersion).toBe('21');
+            const android = result.android as ParsedObject;
+            expect(android.compileSdkVersion).toBe('28');
+            expect(android.versionCode).toBe('1');
+            expect(android.versionName).toBe('1.0');
+            expect(android.minSdkVersion).toBe('21');
         });
     });
 });

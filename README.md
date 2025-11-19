@@ -20,7 +20,7 @@ or from github:
 git clone git@github.com:ehoogerbeets/build-gradle-reader.git
 ~~~~~
 
-How to Use Conjugator From the Command-line
+How to Use the Build Gradle Reader From the Command-line
 ====
 
 
